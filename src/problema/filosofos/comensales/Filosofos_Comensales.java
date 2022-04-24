@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
  */
 public class Filosofos_Comensales extends javax.swing.JFrame {
     
-    int f1, f2, f3, f4, f5;
+    int f1 = 0, f2 = 0, f3 = 0, f4 = 0, f5 = 0;
     HiloPrograma filosofos_comensales = new HiloPrograma();
     
     public Filosofos_Comensales() {
@@ -90,80 +90,68 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         } else if (num == 2) {
             tenedor_disponible(1, true);
             tenedor_disponible(3, true);
-            f2 = Integer.parseInt(txtF2.getText()); //guarda el valor del contador de las veces que va comiendo +1
             f2 += 1;
             txtF2.setText(String.valueOf(f2));
             int filosofo_siguiente = lanzarMoneda2Valores();
             if (filosofo_siguiente == 1) {
                 tenedor_disponible(4, true);
                 tenedor_disponible(5, true);
-                f4 =Integer.parseInt(txtF4.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f4 += 1;
                 txtF4.setText(String.valueOf(f4));
             } else {
                 tenedor_disponible(2, true);
                 tenedor_disponible(4, true);
-                f5 = Integer.parseInt(txtF5.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f5 += 1;
                 txtF5.setText(String.valueOf(f5));
             }
         } else if (num == 3) {
             tenedor_disponible(3, true);
             tenedor_disponible(5, true);
-            f3 = Integer.parseInt(txtF3.getText()); //guarda el valor del contador de las veces que va comiendo +1
             f3 += 1;
             txtF3.setText(String.valueOf(f3));
             int filosofo_siguiente = lanzarMoneda2Valores();
             if (filosofo_siguiente == 1) {
                 tenedor_disponible(2, true);
                 tenedor_disponible(4, true);
-                f5 =Integer.parseInt(txtF5.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f5 += 1;
                 txtF5.setText(String.valueOf(f5));
             } else {
                 tenedor_disponible(1, true);
                 tenedor_disponible(2, true);
-                f1 = Integer.parseInt(txtF1.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f1 += 1;
                 txtF1.setText(String.valueOf(f1));
             }
         } else if (num == 4) {
             tenedor_disponible(4, true);
             tenedor_disponible(5, true);
-            f4 = Integer.parseInt(txtF4.getText()); //guarda el valor del contador de las veces que va comiendo +1
             f4 += 1;
             txtF4.setText(String.valueOf(f4));
             int filosofo_siguiente = lanzarMoneda2Valores();
             if (filosofo_siguiente == 1) {
                 tenedor_disponible(1, true);
                 tenedor_disponible(2, true);
-                f1 =Integer.parseInt(txtF1.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f1 += 1;
                 txtF1.setText(String.valueOf(f1));
             } else {
                 tenedor_disponible(1, true);
                 tenedor_disponible(3, true);
-                f2 = Integer.parseInt(txtF2.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f2 += 1;
                 txtF2.setText(String.valueOf(f2));
             }
         } else if (num == 5) {
             tenedor_disponible(2, true);
             tenedor_disponible(4, true);
-            f5 = Integer.parseInt(txtF5.getText()); //guarda el valor del contador de las veces que va comiendo +1
             f5 += 1;
             txtF5.setText(String.valueOf(f5));
             int filosofo_siguiente = lanzarMoneda2Valores();
             if (filosofo_siguiente == 1) {
                 tenedor_disponible(1, true);
                 tenedor_disponible(3, true);
-                f2 =Integer.parseInt(txtF2.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f2 += 1;
                 txtF2.setText(String.valueOf(f2));
             } else {
                 tenedor_disponible(5, true);
                 tenedor_disponible(3, true);
-                f3 = Integer.parseInt(txtF3.getText()); //guarda el valor del contador de las veces que va comiendo +1
                 f3 += 1;
                 txtF3.setText(String.valueOf(f3));
             }
@@ -173,7 +161,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
             Thread.sleep(5000);  
         } catch(InterruptedException e){  }
         
-        for(int i = 1; i <= 5; i ++){
+        for(int i = 1; i <= 5; i++){
             tenedor_disponible(i, false);
         }
         
@@ -219,27 +207,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
                 System.out.println(num);
                 comer(num);
                 
-            }
-            
-//            Producir(num_veces_comienzo);
-//            try {
-//                Thread.sleep(GenerarTiempoHilo());
-//            } catch (InterruptedException ex) {}
-//            
-//            while(true) {
-//                
-//                int quien_trabaja = LanzamientoMoneda();
-//                int num_veces = NumeroProductos();
-//                
-//                if(quien_trabaja == 0)
-//                    Producir(num_veces);
-//                else
-//                    Consumir(num_veces);
-//                
-//                try {
-//                    Thread.sleep(GenerarTiempoHilo());
-//                } catch (InterruptedException ex) {}
-//            }
+            } 
         }
     }
     
