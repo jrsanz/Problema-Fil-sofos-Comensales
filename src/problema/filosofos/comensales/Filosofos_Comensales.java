@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import java.util.HashMap;
 
 /**
  * Autores del código
@@ -12,14 +13,20 @@ import javax.swing.ImageIcon;
  */
 public class Filosofos_Comensales extends javax.swing.JFrame {
     
-    int f1 = 0, f2 = 0, f3 = 0, f4 = 0, f5 = 0;
+    HashMap<Integer, Integer> filosofos = new HashMap<>();   //Contiene el número de filósofo y su contador de veces que ha comido
     HiloPrograma filosofos_comensales = new HiloPrograma();
     
+    ImageIcon pensando = new ImageIcon("src/img/pensando.png");
+    ImageIcon comiendo = new ImageIcon("src/img/comiendo.png");
+    
+    /**
+     * Constructor de la clase
+     */
     public Filosofos_Comensales() {
         initComponents();
         
         //Configuración de la ventana
-        this.setSize(750, 600);
+        this.setSize(750, 620);
         this.setResizable(false);
         this.setTitle("Productor-Consumidor");
         this.setLocationRelativeTo(null);
@@ -41,139 +48,49 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         Icon icono_bloquear = new ImageIcon(bloquear.getImage().getScaledInstance(lblOcupado1.getWidth(), lblOcupado1.getHeight(), Image.SCALE_DEFAULT));
         
         lblOcupado1.setIcon(icono_bloquear);
-        lblOcupado2.setIcon(icono_bloquear);
-        lblOcupado3.setIcon(icono_bloquear);
-        lblOcupado4.setIcon(icono_bloquear);
         lblOcupado5.setIcon(icono_bloquear);
+        lblOcupado2.setIcon(icono_bloquear);
+        lblOcupado4.setIcon(icono_bloquear);
+        lblOcupado3.setIcon(icono_bloquear);
         
-        for(int i = 1; i <= 5; i++)
-            tenedor_disponible(i, false);
+        //////////////////////////////////////////////////
+        //               INICIALIZACIONES               //
+        //////////////////////////////////////////////////
         
-        for(int i = 1; i <= 5; i++)
-            comido_veces(i, 0);
+        for(int i = 1; i <= 5; i++) {
+            estadoFilosofos(i, false);      //Empiezan todos pensando
+            tenedor_ocupado(i, false);      //Todos los tenedores están disponibles
+            comido_veces(i, 0);             //Se inicializan los contadores de cada filósofo (interfaz)
+            filosofos.put(i, 0);            //Se inicializan los contadores de cada filósofo (arreglo asociativo)
+        }
         
-        filosofos_comensales.start();
+        filosofos_comensales.start();   //Comienza el hilo del programa
     }
     
-    
+    /**
+     * Es un semáforo que indica el número del filósofo que va a comer
+     * @return Devuelve el número del filósofo seleccionado de manera aleatoria (valor entre 1 y 5)
+     */
     private int lanzarMoneda() {
         int numero_aleatorio = (int) (Math.floor(Math.random() * 5) + 1);   //Números aleatorios del 1 - 5
         return numero_aleatorio;
     }
     
+    /**
+     * Se utiliza para saber que filósofo será el siguiente en comer
+     * @return Devuelve un valor entre 1 y 2
+     */
     private int lanzarMoneda2Valores() {
         int numero_aleatorio = (int) (Math.floor(Math.random() * 2) + 1);   //Números aleatorios del 1 - 2
         return numero_aleatorio;
     }
     
-    private void comer(int num) {
-        if (num == 1) {
-            tenedor_disponible(1, true);
-            tenedor_disponible(2, true);
-            f1 = Integer.parseInt(txtF1.getText()); //guarda el valor del contador de las veces que va comiendo +1
-            f1 += 1;
-            txtF1.setText(String.valueOf(f1));
-            int filosofo_siguiente = lanzarMoneda2Valores();
-            if (filosofo_siguiente == 1) {
-                tenedor_disponible(3, true);
-                tenedor_disponible(5, true);
-                f3 = Integer.parseInt(txtF3.getText()); //guarda el valor del contador de las veces que va comiendo +1
-                f3 += 1;
-                txtF3.setText(String.valueOf(f3));
-            } else {
-                tenedor_disponible(4, true);
-                tenedor_disponible(5, true);
-                f4 = Integer.parseInt(txtF4.getText()); //guarda el valor del contador de las veces que va comiendo +1
-                f4 += 1;
-                txtF4.setText(String.valueOf(f4));
-            }
-        } else if (num == 2) {
-            tenedor_disponible(1, true);
-            tenedor_disponible(3, true);
-            f2 += 1;
-            txtF2.setText(String.valueOf(f2));
-            int filosofo_siguiente = lanzarMoneda2Valores();
-            if (filosofo_siguiente == 1) {
-                tenedor_disponible(4, true);
-                tenedor_disponible(5, true);
-                f4 += 1;
-                txtF4.setText(String.valueOf(f4));
-            } else {
-                tenedor_disponible(2, true);
-                tenedor_disponible(4, true);
-                f5 += 1;
-                txtF5.setText(String.valueOf(f5));
-            }
-        } else if (num == 3) {
-            tenedor_disponible(3, true);
-            tenedor_disponible(5, true);
-            f3 += 1;
-            txtF3.setText(String.valueOf(f3));
-            int filosofo_siguiente = lanzarMoneda2Valores();
-            if (filosofo_siguiente == 1) {
-                tenedor_disponible(2, true);
-                tenedor_disponible(4, true);
-                f5 += 1;
-                txtF5.setText(String.valueOf(f5));
-            } else {
-                tenedor_disponible(1, true);
-                tenedor_disponible(2, true);
-                f1 += 1;
-                txtF1.setText(String.valueOf(f1));
-            }
-        } else if (num == 4) {
-            tenedor_disponible(4, true);
-            tenedor_disponible(5, true);
-            f4 += 1;
-            txtF4.setText(String.valueOf(f4));
-            int filosofo_siguiente = lanzarMoneda2Valores();
-            if (filosofo_siguiente == 1) {
-                tenedor_disponible(1, true);
-                tenedor_disponible(2, true);
-                f1 += 1;
-                txtF1.setText(String.valueOf(f1));
-            } else {
-                tenedor_disponible(1, true);
-                tenedor_disponible(3, true);
-                f2 += 1;
-                txtF2.setText(String.valueOf(f2));
-            }
-        } else if (num == 5) {
-            tenedor_disponible(2, true);
-            tenedor_disponible(4, true);
-            f5 += 1;
-            txtF5.setText(String.valueOf(f5));
-            int filosofo_siguiente = lanzarMoneda2Valores();
-            if (filosofo_siguiente == 1) {
-                tenedor_disponible(1, true);
-                tenedor_disponible(3, true);
-                f2 += 1;
-                txtF2.setText(String.valueOf(f2));
-            } else {
-                tenedor_disponible(5, true);
-                tenedor_disponible(3, true);
-                f3 += 1;
-                txtF3.setText(String.valueOf(f3));
-            }
-        }
-        
-        try{  //tiempo que el filosofo pasa comiendo
-            Thread.sleep(5000);  
-        } catch(InterruptedException e){  }
-        
-        for(int i = 1; i <= 5; i++){
-            tenedor_disponible(i, false);
-        }
-        
-    }
-    
-
     /**
      * Se utiliza para poner o quitar el icono de bloqueo a un tenedor
      * @param num Hace referencia al número de icono de bloqueo
      * @param disponible Hace visible u oculta el icono de bloqueo
      */
-    public void tenedor_disponible(int num, boolean disponible) {
+    public void tenedor_ocupado(int num, boolean disponible) {
         switch(num) {
             case 1: lblOcupado1.setVisible(disponible); break;
             case 2: lblOcupado2.setVisible(disponible); break;
@@ -184,7 +101,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     }
     
     /**
-     * Se utiliza para asignar el número de veces que ha comido cada filósofo al campo de texto
+     * Se utiliza para asignar al campo de texto el número de veces que ha comido cada filósofo
      * @param num Hace referencia al número de filósofo
      * @param veces Contiene el número de veces que ha comido un filósofo
      */
@@ -198,15 +115,145 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         }
     }
     
-    private class HiloPrograma extends Thread {
+    /**
+     * Se utiliza para cambiar los iconos de los estados de los filósofos (comiendo o pensando)
+     * @param num Hace referencia al número de filósofo
+     * @param comiendo Evalua si el filósofo esta comiendo o no (pensando)
+     */
+    private void estadoFilosofos(int num, boolean filosofoComiendo) {
+        if(!filosofoComiendo) {   //Pensando
+            Icon icono_pensando = new ImageIcon(pensando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+            switch(num) {
+                case 1: lblF1Estado.setIcon(icono_pensando); break;
+                case 2: lblF2Estado.setIcon(icono_pensando); break;
+                case 3: lblF3Estado.setIcon(icono_pensando); break;
+                case 4: lblF4Estado.setIcon(icono_pensando); break;
+                case 5: lblF5Estado.setIcon(icono_pensando); break;
+            }
+        }
+        else {   //Comiendo
+            Icon icono_comiendo = new ImageIcon(comiendo.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+            switch(num) {
+                case 1: lblF1Estado.setIcon(icono_comiendo); break;
+                case 2: lblF2Estado.setIcon(icono_comiendo); break; 
+                case 3: lblF3Estado.setIcon(icono_comiendo); break;
+                case 4: lblF4Estado.setIcon(icono_comiendo); break;
+                case 5: lblF5Estado.setIcon(icono_comiendo); break;
+            }
+        }
+    }
+    
+    /**
+     * Asigna los tenedores ocupados, estado actual del filósofo y aumenta el contador de cada uno de manera automática
+     * @param num Hace referencia al número de filósofo
+     */
+    private void filosofoComiendo(int num) {
+        tenedor_ocupado(num, true);
         
+        if(num != 1)
+            tenedor_ocupado(num-1, true);
+        else
+            tenedor_ocupado(5, true);
+        
+        filosofos.put(num, filosofos.get(num) + 1);
+        estadoFilosofos(num, true);
+    }
+    
+    /**
+     * Evalua que filósofo va a comer y realiza todo el proceso
+     * @param num Hace referencia al número de filósofo
+     */
+    private void comer(int num) {
+        switch (num) {
+            case 1:
+                filosofoComiendo(1);
+                txtF1.setText(String.valueOf(filosofos.get(1)));
+                if (lanzarMoneda2Valores() == 1) {
+                    filosofoComiendo(3);
+                    txtF3.setText(String.valueOf(filosofos.get(3)));
+                    System.out.println("El filósofo 3 está comiendo.");
+                } else {
+                    filosofoComiendo(4);
+                    txtF4.setText(String.valueOf(filosofos.get(4)));
+                    System.out.println("El filósofo 4 está comiendo.");
+                }   break;
+            case 2:
+                filosofoComiendo(2);
+                txtF2.setText(String.valueOf(filosofos.get(2)));
+                if (lanzarMoneda2Valores() == 1) {
+                    filosofoComiendo(4);
+                    txtF4.setText(String.valueOf(filosofos.get(4)));
+                    System.out.println("El filósofo 4 está comiendo.");
+                } else {
+                    filosofoComiendo(5);
+                    txtF5.setText(String.valueOf(filosofos.get(5)));
+                    System.out.println("El filósofo 5 está comiendo.");
+                }   break;
+            case 3:
+                filosofoComiendo(3);
+                txtF3.setText(String.valueOf(filosofos.get(3)));
+                if (lanzarMoneda2Valores() == 1) {
+                    filosofoComiendo(5);
+                    txtF5.setText(String.valueOf(filosofos.get(5)));
+                    System.out.println("El filósofo 5 está comiendo.");
+                } else {
+                    filosofoComiendo(1);
+                    txtF1.setText(String.valueOf(filosofos.get(1)));
+                    System.out.println("El filósofo 1 está comiendo.");
+                }   break;
+            case 4:
+                filosofoComiendo(4);
+                txtF4.setText(String.valueOf(filosofos.get(4)));
+                estadoFilosofos(4, true);
+                if (lanzarMoneda2Valores() == 1) {
+                    filosofoComiendo(1);
+                    txtF1.setText(String.valueOf(filosofos.get(1)));
+                    System.out.println("El filósofo 1 está comiendo.");
+                } else {
+                    filosofoComiendo(2);
+                    txtF2.setText(String.valueOf(filosofos.get(2)));
+                    System.out.println("El filósofo 2 está comiendo.");
+                }   break;
+            case 5:
+                filosofoComiendo(5);
+                txtF5.setText(String.valueOf(filosofos.get(5)));
+                estadoFilosofos(5, true);
+                if (lanzarMoneda2Valores() == 1) {
+                    filosofoComiendo(2);
+                    txtF2.setText(String.valueOf(filosofos.get(2)));
+                    System.out.println("El filósofo 2 está comiendo.");
+                } else {
+                    filosofoComiendo(3);
+                    txtF3.setText(String.valueOf(filosofos.get(3)));
+                    System.out.println("El filósofo 3 está comiendo.");
+                }   break;
+            default:
+                break;
+        }
+        
+        System.out.println("------------------------------");
+        
+        try{
+            Thread.sleep(5000);   //Tiempo que el filósofo pasa comiendo
+        } catch(InterruptedException e){  }
+        
+        for(int i = 1; i <= 5; i++) {
+            tenedor_ocupado(i, false);
+            estadoFilosofos(i, false);
+        }
+    }
+    
+    
+    /**
+     * Es el hilo que lleva el programa, el cual se ejecutará hasta que cada filósofo halla comido 5 veces
+     */
+    private class HiloPrograma extends Thread {
         public void run() {
             int num;
             while (true) {
                 num = lanzarMoneda();
-                System.out.println(num);
+                System.out.println("El filósofo " + num + " está comiendo.");
                 comer(num);
-                
             } 
         }
     }
@@ -233,6 +280,11 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         lblFilosofo1 = new javax.swing.JLabel();
         lblVecesQueHaComido = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
+        lblF5Estado = new javax.swing.JLabel();
+        lblF4Estado = new javax.swing.JLabel();
+        lblF3Estado = new javax.swing.JLabel();
+        lblF2Estado = new javax.swing.JLabel();
+        lblF1Estado = new javax.swing.JLabel();
         lblF5 = new javax.swing.JLabel();
         lblF4 = new javax.swing.JLabel();
         lblF3 = new javax.swing.JLabel();
@@ -243,10 +295,10 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(lblOcupado5, new org.netbeans.lib.awtextra.AbsoluteConstraints(225, 422, 24, 24));
+        getContentPane().add(lblOcupado5, new org.netbeans.lib.awtextra.AbsoluteConstraints(283, 252, 24, 24));
         getContentPane().add(lblOcupado4, new org.netbeans.lib.awtextra.AbsoluteConstraints(306, 355, 24, 24));
-        getContentPane().add(lblOcupado3, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 355, 24, 24));
-        getContentPane().add(lblOcupado2, new org.netbeans.lib.awtextra.AbsoluteConstraints(283, 252, 24, 24));
+        getContentPane().add(lblOcupado3, new org.netbeans.lib.awtextra.AbsoluteConstraints(225, 422, 24, 24));
+        getContentPane().add(lblOcupado2, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 355, 24, 24));
         getContentPane().add(lblOcupado1, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 257, 24, 24));
 
         txtF5.setEditable(false);
@@ -302,31 +354,36 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 120, 190, 250));
+        getContentPane().add(lblF5Estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 210, 80, 80));
+        getContentPane().add(lblF4Estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 460, 80, 80));
+        getContentPane().add(lblF3Estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 460, 80, 80));
+        getContentPane().add(lblF2Estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, 80, 80));
+        getContentPane().add(lblF1Estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 110, 80, 80));
 
         lblF5.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
         lblF5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblF5.setText("F5");
-        getContentPane().add(lblF5, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 230, 40, 40));
+        getContentPane().add(lblF5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 160, 40, 40));
 
         lblF4.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
         lblF4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblF4.setText("F4");
-        getContentPane().add(lblF4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 460, 40, 40));
+        getContentPane().add(lblF4, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 480, 40, 40));
 
         lblF3.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
         lblF3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblF3.setText("F3");
-        getContentPane().add(lblF3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 460, 40, 40));
+        getContentPane().add(lblF3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 480, 40, 40));
 
         lblF2.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
         lblF2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblF2.setText("F2");
-        getContentPane().add(lblF2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 230, 40, 40));
+        getContentPane().add(lblF2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, 40, 40));
 
         lblF1.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
         lblF1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblF1.setText("F1");
-        getContentPane().add(lblF1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, 40, 40));
+        getContentPane().add(lblF1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 40, 40));
         getContentPane().add(lblMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 210, 256, 256));
 
         lblTitulo.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
@@ -376,10 +433,15 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblF1;
+    private javax.swing.JLabel lblF1Estado;
     private javax.swing.JLabel lblF2;
+    private javax.swing.JLabel lblF2Estado;
     private javax.swing.JLabel lblF3;
+    private javax.swing.JLabel lblF3Estado;
     private javax.swing.JLabel lblF4;
+    private javax.swing.JLabel lblF4Estado;
     private javax.swing.JLabel lblF5;
+    private javax.swing.JLabel lblF5Estado;
     private javax.swing.JLabel lblFilosofo1;
     private javax.swing.JLabel lblFilosofo2;
     private javax.swing.JLabel lblFilosofo3;
