@@ -2,9 +2,12 @@ package problema.filosofos.comensales;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Autores del código
@@ -15,9 +18,11 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     
     HashMap<Integer, Integer> filosofos = new HashMap<>();   //Contiene el número de filósofo y su contador de veces que ha comido
     HiloPrograma filosofos_comensales = new HiloPrograma();
+    ArrayList<Integer> numero_filosofos = new ArrayList<>();
     
     ImageIcon pensando = new ImageIcon("src/img/pensando.png");
     ImageIcon comiendo = new ImageIcon("src/img/comiendo.png");
+    ImageIcon descansando = new ImageIcon("src/img/descarga.png");
     
     /**
      * Constructor de la clase
@@ -58,11 +63,14 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         //////////////////////////////////////////////////
         
         for(int i = 1; i <= 5; i++) {
+            numero_filosofos.add(i);        //Arreglo que incluye los números de los filósofos
+            comido_veces(i, 0);             //Se inicializan los contadores de cada filósofo (interfaz)
+            filosofos.put(i, 0);            //Se inicializan los contadores de cada filósofo (arreglo asociativo)  
             estadoFilosofos(i, false);      //Empiezan todos pensando
             tenedor_ocupado(i, false);      //Todos los tenedores están disponibles
-            comido_veces(i, 0);             //Se inicializan los contadores de cada filósofo (interfaz)
-            filosofos.put(i, 0);            //Se inicializan los contadores de cada filósofo (arreglo asociativo)           
         }
+        
+        System.out.println(numero_filosofos);
         
         filosofos_comensales.start();   //Comienza el hilo del programa
     }
@@ -72,7 +80,8 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
      * @return Devuelve el número del filósofo seleccionado de manera aleatoria (valor entre 1 y 5)
      */
     private int lanzarMoneda() {
-        int numero_aleatorio = (int) (Math.floor(Math.random() * 5) + 1);   //Números aleatorios del 1 - 5
+        Random random = new Random();
+        int numero_aleatorio = numero_filosofos.get(random.nextInt(numero_filosofos.size()));   //Números aleatorios del 1 - 5
         return numero_aleatorio;
     }
     
@@ -120,44 +129,84 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
      * @param num Hace referencia al número de filósofo
      * @param comiendo Evalua si el filósofo esta comiendo o no (pensando)
      */
-    private void estadoFilosofos(int num, boolean filosofoComiendo) {                                    
-        if(!filosofoComiendo) {   //Pensando
-            Icon icono_pensando = new ImageIcon(pensando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
-            switch(num) {
-                case 1: lblF1Estado.setIcon(icono_pensando); break;
-                case 2: lblF2Estado.setIcon(icono_pensando); break;
-                case 3: lblF3Estado.setIcon(icono_pensando); break;
-                case 4: lblF4Estado.setIcon(icono_pensando); break;
-                case 5: lblF5Estado.setIcon(icono_pensando); break;
+    private void estadoFilosofos(int num, boolean filosofoComiendo) {
+        if(!filosofoTerminado(num)) {
+            if(!filosofoComiendo) {   //Pensando
+                Icon icono_pensando = new ImageIcon(pensando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+                switch(num) {
+                    case 1: lblF1Estado.setIcon(icono_pensando); break;
+                    case 2: lblF2Estado.setIcon(icono_pensando); break;
+                    case 3: lblF3Estado.setIcon(icono_pensando); break;
+                    case 4: lblF4Estado.setIcon(icono_pensando); break;
+                    case 5: lblF5Estado.setIcon(icono_pensando); break;
+                }
+            }
+            else {   //Comiendo
+                Icon icono_comiendo = new ImageIcon(comiendo.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+                switch(num) {
+                    case 1: lblF1Estado.setIcon(icono_comiendo); break;
+                    case 2: lblF2Estado.setIcon(icono_comiendo); break; 
+                    case 3: lblF3Estado.setIcon(icono_comiendo); break;
+                    case 4: lblF4Estado.setIcon(icono_comiendo); break;
+                    case 5: lblF5Estado.setIcon(icono_comiendo); break;
+                }
             }
         }
-        else {   //Comiendo
-            Icon icono_comiendo = new ImageIcon(comiendo.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+    }
+    
+    /**
+     * Evalua si el filósofo ha comido 5 veces
+     * @param num Hace referencia al número de filósofo
+     * @return Devuelve cierto o falso según sea el caso
+     */
+    private boolean filosofoTerminado(int num) {
+        if(filosofos.get(num) == 5) {
+            Icon icono_descansando= new ImageIcon(descansando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
             switch(num) {
-                case 1: lblF1Estado.setIcon(icono_comiendo); break;
-                case 2: lblF2Estado.setIcon(icono_comiendo); break; 
-                case 3: lblF3Estado.setIcon(icono_comiendo); break;
-                case 4: lblF4Estado.setIcon(icono_comiendo); break;
-                case 5: lblF5Estado.setIcon(icono_comiendo); break;
+                case 1: lblF1Estado.setIcon(icono_descansando); break;
+                case 2: lblF2Estado.setIcon(icono_descansando); break;
+                case 3: lblF3Estado.setIcon(icono_descansando); break;
+                case 4: lblF4Estado.setIcon(icono_descansando); break;
+                case 5: lblF5Estado.setIcon(icono_descansando); break;
             }
+            for(int i = 0; i < numero_filosofos.size(); i++) {
+                if(numero_filosofos.get(i) == num)
+                    numero_filosofos.remove(new Integer(num));
+                System.out.println(numero_filosofos);
+            }
+            return true;
         }
-        
+        return false;
     }
     
     /**
      * Asigna los tenedores ocupados, estado actual del filósofo y aumenta el contador de cada uno de manera automática
      * @param num Hace referencia al número de filósofo
      */
-    private void filosofoComiendo(int num) {
-        tenedor_ocupado(num, true);
+    private boolean filosofoComiendo(int num) {
+        if (filosofos.get(num) < 5) {
+            tenedor_ocupado(num, true);
+
+            if(num != 1)
+                tenedor_ocupado(num-1, true);
+            else
+                tenedor_ocupado(5, true);
+
+            filosofos.put(num, filosofos.get(num) + 1);
+            estadoFilosofos(num, true);
+            
+            switch(num) {
+                case 1: txtF1.setText(String.valueOf(filosofos.get(1))); break;
+                case 2: txtF2.setText(String.valueOf(filosofos.get(2))); break;
+                case 3: txtF3.setText(String.valueOf(filosofos.get(3))); break;
+                case 4: txtF4.setText(String.valueOf(filosofos.get(4))); break;
+                case 5: txtF5.setText(String.valueOf(filosofos.get(5))); break;
+            }
+
+            return true;
+        }
         
-        if(num != 1)
-            tenedor_ocupado(num-1, true);
-        else
-            tenedor_ocupado(5, true);
-        
-        filosofos.put(num, filosofos.get(num) + 1);
-        estadoFilosofos(num, true);
+        return false;
     }
     
     /**
@@ -167,102 +216,62 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     private void comer(int num) {
         switch (num) {
             case 1:
-                if (!filosofosComidos(1)) {
-                    filosofoComiendo(1);
-                    txtF1.setText(String.valueOf(filosofos.get(1)));
+                if(filosofoComiendo(1)) {
                     System.out.println("El filósofo " + num + " está comiendo.");
                     if (lanzarMoneda2Valores() == 1) {
-                        if (!filosofosComidos(3)) {                                                    
-                            filosofoComiendo(3);
-                            txtF3.setText(String.valueOf(filosofos.get(3)));
+                        if (filosofoComiendo(3))
                             System.out.println("El filósofo 3 está comiendo.");
-                        }
                     } else {
-                        if (!filosofosComidos(4)) {
-                            filosofoComiendo(4);
-                            txtF4.setText(String.valueOf(filosofos.get(4)));
+                        if (filosofoComiendo(4))
                             System.out.println("El filósofo 4 está comiendo.");
-                        }  
-                    }  
-                }
-                break;
-            case 2:
-                if (!filosofosComidos(2)) {                                   
-                    filosofoComiendo(2);
-                    txtF2.setText(String.valueOf(filosofos.get(2)));
-                    System.out.println("El filósofo " + num + " está comiendo.");
-                        if (lanzarMoneda2Valores() == 1) {
-                            if (!filosofosComidos(4)) {
-                            filosofoComiendo(4);
-                            txtF4.setText(String.valueOf(filosofos.get(4)));
-                            System.out.println("El filósofo 4 está comiendo.");
-                        }
-                    } else {
-                        if (!filosofosComidos(5)) {
-                            filosofoComiendo(5);
-                            txtF5.setText(String.valueOf(filosofos.get(5)));
-                            System.out.println("El filósofo 5 está comiendo.");
-                        }
-                    }   
-                }
-                break;
-            case 3:
-                if (!filosofosComidos(3)) {                                    
-                    filosofoComiendo(3);
-                    txtF3.setText(String.valueOf(filosofos.get(3)));
-                    System.out.println("El filósofo " + num + " está comiendo.");
-                    if (lanzarMoneda2Valores() == 1) {
-                        if (!filosofosComidos(5)) {                                                    
-                            filosofoComiendo(5);
-                            txtF5.setText(String.valueOf(filosofos.get(5)));
-                            System.out.println("El filósofo 5 está comiendo.");
-                        }
-                    } else {
-                        if (!filosofosComidos(1)) {                                                    
-                            filosofoComiendo(1);
-                            txtF1.setText(String.valueOf(filosofos.get(1)));
-                            System.out.println("El filósofo 1 está comiendo.");
-                        }
                     }
                 }
                 break;
-            case 4:
-                if (!filosofosComidos(4)) {                                    
-                    filosofoComiendo(4);
-                    txtF4.setText(String.valueOf(filosofos.get(4)));
-                    System.out.println("El filósofo " + num + " está comiendo.");                   
-                    if (lanzarMoneda2Valores() == 1) {
-                        if (!filosofosComidos(1)) {
-                            filosofoComiendo(1);
-                            txtF1.setText(String.valueOf(filosofos.get(1)));
-                            System.out.println("El filósofo 1 está comiendo.");
-                        }
-                    } else {
-                            if (!filosofosComidos(2)) {
-                                filosofoComiendo(2);
-                                txtF2.setText(String.valueOf(filosofos.get(2)));
-                                System.out.println("El filósofo 2 está comiendo.");
-                            }
-                        }
-                    } 
-                break;
-            case 5:
-                if (!filosofosComidos(5)) {
-                    filosofoComiendo(5);
-                    txtF5.setText(String.valueOf(filosofos.get(5)));
+            case 2:                                 
+                if(filosofoComiendo(2)) {
                     System.out.println("El filósofo " + num + " está comiendo.");
                     if (lanzarMoneda2Valores() == 1) {
-                        if (!filosofosComidos(2)) {
-                            filosofoComiendo(2);
-                            txtF2.setText(String.valueOf(filosofos.get(2)));
-                            System.out.println("El filósofo 2 está comiendo.");
-                        }
+                        if (filosofoComiendo(4))
+                            System.out.println("El filósofo 4 está comiendo.");
                     } else {
-                        if (!filosofosComidos(3)) {
-                            filosofoComiendo(3);
-                            txtF3.setText(String.valueOf(filosofos.get(3)));
+                        if (filosofoComiendo(5))
+                            System.out.println("El filósofo 5 está comiendo.");
+                    }
+                }
+                break;
+            case 3:
+                if(filosofoComiendo(3)) {
+                    System.out.println("El filósofo " + num + " está comiendo.");
+                    if (lanzarMoneda2Valores() == 1) {
+                        if (filosofoComiendo(5))
+                            System.out.println("El filósofo 5 está comiendo.");
+                    } else {
+                        if (filosofoComiendo(1))
+                            System.out.println("El filósofo 1 está comiendo.");
+                    }
+                }
+                break;
+            case 4:                                   
+                if(filosofoComiendo(4)) {
+                    System.out.println("El filósofo " + num + " está comiendo.");                   
+                    if (lanzarMoneda2Valores() == 1) {
+                        if (filosofoComiendo(1))
+                            System.out.println("El filósofo 1 está comiendo.");
+                    } else {
+                        if (filosofoComiendo(2))
+                            System.out.println("El filósofo 2 está comiendo.");
+                    }
+                }
+                break;
+            case 5:
+                if(filosofoComiendo(5)) {
+                    System.out.println("El filósofo " + num + " está comiendo.");
+                    if (lanzarMoneda2Valores() == 1) {
+                        if (filosofoComiendo(2))
+                            System.out.println("El filósofo 2 está comiendo.");
+                    } else {
+                        if (filosofoComiendo(3))
                             System.out.println("El filósofo 3 está comiendo.");
-                        }
                     }
                 }
                 break;
@@ -282,21 +291,8 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         }
     }
     
-    private boolean filosofosComidos(int num) {
-        if (filosofos.get(num) >= 5) {
-            return true;
-        }
-        return false;
-    }
-        
     private boolean terminarPrograma() {
-        if (filosofos.get(1) >= 5 && filosofos.get(2) >= 5 && filosofos.get(3) >= 5 && filosofos.get(4) >= 5 && filosofos.get(5) >= 5) {
-            return true;
-        }
-//        if (filosofos_comidos.get(1) && filosofos_comidos.get(2) && filosofos_comidos.get(3) && filosofos_comidos.get(4) && filosofos_comidos.get(5)) {
-//            return true;
-//        }
-        return false;
+        return filosofos.get(1) == 5 && filosofos.get(2) == 5 && filosofos.get(3) == 5 && filosofos.get(4) == 5 && filosofos.get(5) == 5;
     }
     
     /**
@@ -310,7 +306,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
                 comer(num);               
                 if (terminarPrograma()) {
                     System.out.println("¡Hemos terminado!");
-                    break;
+                    filosofos_comensales.stop();
                 }
             } 
         }
