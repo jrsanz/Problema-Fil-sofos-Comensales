@@ -2,6 +2,7 @@ package problema.filosofos.comensales;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.Icon;
@@ -17,12 +18,12 @@ import java.util.Random;
 public class Filosofos_Comensales extends javax.swing.JFrame {
     
     HashMap<Integer, Integer> filosofos = new HashMap<>();   //Contiene el número de filósofo y su contador de veces que ha comido
-    HiloPrograma filosofos_comensales = new HiloPrograma();
-    ArrayList<Integer> numero_filosofos = new ArrayList<>();
+    HiloPrograma filosofos_comensales = new HiloPrograma();   //Hilo que se encargará de ejecutar el programa
+    ArrayList<Integer> numero_filosofos = new ArrayList<>();   //Contiene los números de los filósofos que serán tomados en cuenta en el semáforo
     
     ImageIcon pensando = new ImageIcon("src/img/pensando.png");
     ImageIcon comiendo = new ImageIcon("src/img/comiendo.png");
-    ImageIcon descansando = new ImageIcon("src/img/descarga.png");
+    ImageIcon descansando = new ImageIcon("src/img/descansando.png");
     
     /**
      * Constructor de la clase
@@ -59,6 +60,15 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         lblOcupado3.setIcon(icono_bloquear);
         
         //////////////////////////////////////////////////
+        //              PROGRAMA TERMINADO              //
+        //////////////////////////////////////////////////
+        
+        ImageIcon terminado = new ImageIcon("src/img/terminado.png");
+        Icon icono_terminado = new ImageIcon(terminado.getImage().getScaledInstance(lblTerminado.getWidth(), lblTerminado.getHeight(), Image.SCALE_DEFAULT));
+        lblTerminado.setIcon(icono_terminado);
+        lblTerminado.setVisible(false);
+        
+        //////////////////////////////////////////////////
         //               INICIALIZACIONES               //
         //////////////////////////////////////////////////
         
@@ -69,10 +79,16 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
             estadoFilosofos(i, false);      //Empiezan todos pensando
             tenedor_ocupado(i, false);      //Todos los tenedores están disponibles
         }
-        
-        System.out.println(numero_filosofos);
-        
-        filosofos_comensales.start();   //Comienza el hilo del programa
+    }
+    
+    /**
+     * Le asigna el icono al proyecto (tanto en la ventana como en el programa)
+     * @return Devuelve la imagen que tendrá como icono el proyecto
+     */
+    @Override
+    public Image getIconImage() {
+        Image retValue = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("img/tenedor.png"));
+        return retValue;
     }
     
     /**
@@ -160,21 +176,28 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
      * @return Devuelve cierto o falso según sea el caso
      */
     private boolean filosofoTerminado(int num) {
+        boolean filosofo_eliminado = false;
         if(filosofos.get(num) == 5) {
-            Icon icono_descansando= new ImageIcon(descansando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
-            switch(num) {
-                case 1: lblF1Estado.setIcon(icono_descansando); break;
-                case 2: lblF2Estado.setIcon(icono_descansando); break;
-                case 3: lblF3Estado.setIcon(icono_descansando); break;
-                case 4: lblF4Estado.setIcon(icono_descansando); break;
-                case 5: lblF5Estado.setIcon(icono_descansando); break;
-            }
             for(int i = 0; i < numero_filosofos.size(); i++) {
-                if(numero_filosofos.get(i) == num)
+                if(numero_filosofos.get(i) == num) {
                     numero_filosofos.remove(new Integer(num));
-                System.out.println(numero_filosofos);
+                    filosofo_eliminado = true;
+                }
+                System.out.println("Filosofos que aun pueden comer: " + numero_filosofos);
             }
-            return true;
+            
+            if(!filosofo_eliminado) {
+                Icon icono_descansando= new ImageIcon(descansando.getImage().getScaledInstance(lblF1Estado.getWidth(), lblF1Estado.getHeight(), Image.SCALE_DEFAULT));
+                switch(num) {
+                    case 1: lblF1Estado.setIcon(icono_descansando); break;
+                    case 2: lblF2Estado.setIcon(icono_descansando); break;
+                    case 3: lblF3Estado.setIcon(icono_descansando); break;
+                    case 4: lblF4Estado.setIcon(icono_descansando); break;
+                    case 5: lblF5Estado.setIcon(icono_descansando); break;
+                }
+            }
+            
+            return !filosofo_eliminado;   //Si el filósofo fue eliminado, no se cambiará inmediatamente el icono al estado descansando
         }
         return false;
     }
@@ -305,6 +328,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
                 num = lanzarMoneda();
                 comer(num);               
                 if (terminarPrograma()) {
+                    lblTerminado.setVisible(true);
                     System.out.println("¡Hemos terminado!");
                     filosofos_comensales.stop();
                 }
@@ -317,6 +341,8 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblTerminado = new javax.swing.JLabel();
+        btnIniciar = new javax.swing.JButton();
         lblOcupado5 = new javax.swing.JLabel();
         lblOcupado4 = new javax.swing.JLabel();
         lblOcupado3 = new javax.swing.JLabel();
@@ -348,7 +374,19 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         lblTitulo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(getIconImage());
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(lblTerminado, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 390, 150, 150));
+
+        btnIniciar.setBackground(new java.awt.Color(153, 192, 169));
+        btnIniciar.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnIniciar.setText("Iniciar programa");
+        btnIniciar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIniciarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnIniciar, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 430, 150, 50));
         getContentPane().add(lblOcupado5, new org.netbeans.lib.awtextra.AbsoluteConstraints(283, 252, 24, 24));
         getContentPane().add(lblOcupado4, new org.netbeans.lib.awtextra.AbsoluteConstraints(306, 355, 24, 24));
         getContentPane().add(lblOcupado3, new org.netbeans.lib.awtextra.AbsoluteConstraints(225, 422, 24, 24));
@@ -449,6 +487,12 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
+        System.out.println("Filosofos que aun pueden comer: " + numero_filosofos);
+        filosofos_comensales.start();   //Comienza el hilo del programa
+        btnIniciar.setVisible(false);
+    }//GEN-LAST:event_btnIniciarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -485,6 +529,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnIniciar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblF1;
     private javax.swing.JLabel lblF1Estado;
@@ -507,6 +552,7 @@ public class Filosofos_Comensales extends javax.swing.JFrame {
     private javax.swing.JLabel lblOcupado3;
     private javax.swing.JLabel lblOcupado4;
     private javax.swing.JLabel lblOcupado5;
+    private javax.swing.JLabel lblTerminado;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JLabel lblVecesQueHaComido;
     private javax.swing.JTextField txtF1;
